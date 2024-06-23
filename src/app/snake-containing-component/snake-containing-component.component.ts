@@ -4,6 +4,7 @@ import {
   Input,
   EventEmitter,
   Output,
+  OnInit,
 } from '@angular/core';
 import { NgxSnakeComponent, NgxSnakeModule } from 'ngx-snake';
 import { HotkeysService } from '@ngneat/hotkeys';
@@ -16,6 +17,7 @@ import { FilterPipe } from '../filter.pipe';
 import { SortPipe } from '../sort.pipe';
 import { SortHighscoresPipe } from '../sort-highscores.pipe';
 import { Router } from '@angular/router';
+import { PlayerDataService } from '../playerdata.service';
 
 @Component({
   selector: 'app-snake-containing-component',
@@ -34,11 +36,11 @@ import { Router } from '@angular/router';
     SortHighscoresPipe,
   ],
 })
-export class SnakeContainingComponentComponent {
+export class SnakeContainingComponentComponent implements OnInit {
   @ViewChild('game')
   private _snake!: NgxSnakeComponent;
-  @Input() user: User | null = null;
-  @Output() changeShowSnake = new EventEmitter<boolean>();
+  // @Input() user: User | null = null;
+  // @Output() changeShowSnake = new EventEmitter<boolean>();
 
   public points: number = 0;
   public scores: {
@@ -62,7 +64,12 @@ export class SnakeContainingComponentComponent {
   public sortBy: string = '';
   public sortByAscDesc: string = 'asc';
   public bw = false;
-  constructor(private hotkeys: HotkeysService, private _router: Router) {
+  public user: User | null = null;
+  constructor(
+    private hotkeys: HotkeysService,
+    private _router: Router,
+    public _playerDataService: PlayerDataService
+  ) {
     this._addHotkeys();
   }
   private _addHotkeys() {
@@ -160,9 +167,16 @@ export class SnakeContainingComponentComponent {
     });
   }
   public exitGame() {
-    this.changeShowSnake.emit(false);
+    // this.changeShowSnake.emit(false);
 
     this.onReset();
     this._router.navigate(['/']);
+  }
+  ngOnInit(): void {
+    const playerData = this._playerDataService.getPlayerData();
+    this.user = {
+      name: playerData.name || '',
+      email: playerData.email || '',
+    };
   }
 }
