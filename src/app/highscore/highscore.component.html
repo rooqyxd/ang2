@@ -1,0 +1,10 @@
+<h2>High Scores</h2>
+<select id="sortOrder" (change)="onSortOrderChange($event)">
+    <option value="asc">Ascending</option>
+    <option value="desc" selected>Descending</option>
+  </select>
+<ul>
+  <li *ngFor="let score of highscores | sorthttp : sortHttpByAscDesc">
+    {{ score.name }} - {{ score.score }}
+  </li>
+</ul>

@@ -22,6 +22,7 @@ export class FormComponent implements OnInit {
   public name = '';
   public email = '';
   public user: User | null = null;
+  public colorPalette = 'normal';
   public isSnakeVisible = false;
   public onSubmit() {
     if (!this.name || this.name.length < 2) {
@@ -51,7 +52,7 @@ export class FormComponent implements OnInit {
     this.openSnake();
     this.name = '';
     this.email = '';
-    this._router.navigate(['/snake']);
+    this._router.navigate(['/snake', this.colorPalette]);
   }
   public openSnake() {
     this.isSnakeVisible = true;

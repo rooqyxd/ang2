@@ -16,9 +16,12 @@ import { FormsModule } from '@angular/forms';
 import { FilterPipe } from '../filter.pipe';
 import { SortPipe } from '../sort.pipe';
 import { SortHighscoresPipe } from '../sort-highscores.pipe';
-import { Router } from '@angular/router';
-import { PlayerDataService } from '../playerdata.service';
+import { Router, ActivatedRoute } from '@angular/router';
 
+import { PlayerDataService } from '../playerdata.service';
+import { HighscoreService } from '../highscore.service';
+import { interval, Subscription } from 'rxjs';
+import { HighscoreComponent } from '../highscore/highscore.component';
 @Component({
   selector: 'app-snake-containing-component',
   standalone: true,
@@ -34,6 +37,7 @@ import { PlayerDataService } from '../playerdata.service';
     FilterPipe,
     SortPipe,
     SortHighscoresPipe,
+    HighscoreComponent,
   ],
 })
 export class SnakeContainingComponentComponent implements OnInit {
@@ -49,6 +53,7 @@ export class SnakeContainingComponentComponent implements OnInit {
     minutes: string;
     seconds: string;
   }[] = [];
+  public newScores = [];
   public gameStartTime: number | null = null;
   public gameStopTime: number | null = null; //
   public gameDuration: number = 0;
@@ -65,13 +70,21 @@ export class SnakeContainingComponentComponent implements OnInit {
   public sortByAscDesc: string = 'asc';
   public bw = false;
   public user: User | null = null;
+  public highContrast: boolean = false;
   constructor(
     private hotkeys: HotkeysService,
     private _router: Router,
-    public _playerDataService: PlayerDataService
+    public _playerDataService: PlayerDataService,
+    private _highscoreService: HighscoreService,
+    private route: ActivatedRoute
   ) {
     this._addHotkeys();
+    this._highscoreService.load().subscribe((data) => {
+      console.log('teraz dane z hajskor serwis');
+      console.log(data);
+    });
   }
+
   private _addHotkeys() {
     this.hotkeys
       .addShortcut({ keys: 'up' })
@@ -146,6 +159,19 @@ export class SnakeContainingComponentComponent implements OnInit {
     this.scores.push(gameResult);
     this.points = 0;
     this.gameDuration = 0;
+    if (this.user) {
+      this._highscoreService
+        .save({ name: this.user.name, score: gameResult.score })
+        .subscribe(
+          (response) => {
+            console.log('Score successfully saved:', response);
+          },
+          (error) => {
+            console.error('Error saving score:', error);
+          }
+        );
+    }
+    this._highscoreService.load();
   }
   public onReset() {
     this.isGameOver = false;
@@ -173,6 +199,9 @@ export class SnakeContainingComponentComponent implements OnInit {
     this._router.navigate(['/']);
   }
   ngOnInit(): void {
+    this.route.params.subscribe((params) => {
+      this.highContrast = params['colors'] === 'high-contrast';
+    });
     const playerData = this._playerDataService.getPlayerData();
     this.user = {
       name: playerData.name || '',

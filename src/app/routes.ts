@@ -6,12 +6,11 @@ const routeConfig: Routes = [
   {
     path: '',
     component: FormComponent,
-    title: 'FormComponent',
   },
+
   {
-    path: 'snake',
+    path: 'snake/:colors',
     component: SnakeContainingComponentComponent,
-    title: 'SnakeContainingComponentComponent',
   },
 ];
 export default routeConfig;

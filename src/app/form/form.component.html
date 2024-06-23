@@ -3,8 +3,13 @@
   <form (ngSubmit)="onSubmit()">
     <label for="name">Name: </label>
     <input [(ngModel)]="name" type="text" name="name" placeholder="Name" />
-    <label for="email"> Email: </label>
+    <label for="email">Email: </label>
     <input [(ngModel)]="email" type="email" name="email" placeholder="E-mail" />
+    <label for="colorPalette">Color Palette: </label>
+    <select [(ngModel)]="colorPalette" name="colorPalette">
+      <option value="normal">Normal</option>
+      <option value="high-contrast">High Contrast</option>
+    </select>
     <button *ngIf="!isSnakeVisible" type="submit">Start game</button>
   </form>
 </div>

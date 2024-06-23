@@ -1,4 +1,4 @@
-<div class="wrapper">
+<div class="wrapper" [ngClass]="{ 'high-contrast': highContrast }">
   <div class="action-list">
     <button (click)="exitGame()">Exit game</button>
     <h2>Action list</h2>
@@ -116,4 +116,5 @@
       </li>
     </ol>
   </div>
+  <app-highscore></app-highscore>
 </div>
