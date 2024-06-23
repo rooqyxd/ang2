@@ -1,15 +1,38 @@
-<div class="form-wrapper">
-  <h1>Welcome!</h1>
-  <form (ngSubmit)="onSubmit()">
-    <label for="name">Name: </label>
-    <input [(ngModel)]="name" type="text" name="name" placeholder="Name" />
-    <label for="email">Email: </label>
-    <input [(ngModel)]="email" type="email" name="email" placeholder="E-mail" />
-    <label for="colorPalette">Color Palette: </label>
-    <select [(ngModel)]="colorPalette" name="colorPalette">
-      <option value="normal">Normal</option>
-      <option value="high-contrast">High Contrast</option>
+<form [formGroup]="playerForm" (ngSubmit)="onSubmit()">
+  <div>
+    <label for="name">imie:</label>
+    <input id="name" formControlName="name" />
+    <div
+      *ngIf="playerForm.get('name')?.invalid && playerForm.get('name')?.touched"
+    >
+      imie na min 5 znakow
+    </div>
+  </div>
+
+  <div>
+    <label for="authCode">aut kod:</label>
+    <input id="authCode" formControlName="authCode" type="password" />
+    <div
+      *ngIf="
+        playerForm.get('authCode')?.invalid &&
+        playerForm.get('authCode')?.touched
+      "
+    >
+      kodzik tez 5 znakow
+    </div>
+  </div>
+
+  <div>
+    <label for="color">kolor:</label>
+    <select id="color" formControlName="color" (change)="onColorChange($event)">
+      <option value="normal">normalny</option>
+      <option value="high-contrast">super kontrast</option>
     </select>
-    <button *ngIf="!isSnakeVisible" type="submit">Start game</button>
-  </form>
+  </div>
+
+  <button type="submit">wejdz</button>
+</form>
+
+<div id="someElement">
+ tu zmienia sie kolorek
 </div>

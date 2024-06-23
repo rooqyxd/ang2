@@ -14,7 +14,7 @@ export class PlayerDataService {
 
   setPlayerData(data: {
     name: string;
-    email: string;
+    email?: string;
     score?: number;
     id?: number;
   }): void {

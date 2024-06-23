@@ -1,70 +1,76 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { User } from '../user';
-import { CommonModule, NgIf } from '@angular/common';
-import { NgxSnakeModule } from 'ngx-snake';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PlayerDataService } from '../playerdata.service';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIf, NgxSnakeModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './form.component.html',
-  styleUrl: './form.component.scss',
+  styleUrls: ['./form.component.scss'],
 })
 export class FormComponent implements OnInit {
-  // @Output() public userCreated = new EventEmitter<User>();
-  // @Output() public showSnakeEvent = new EventEmitter<boolean>();
-  constructor(
-    private _router: Router,
-    public _playerDataService: PlayerDataService
-  ) {}
-  public name = '';
-  public email = '';
-  public user: User | null = null;
-  public colorPalette = 'normal';
-  public isSnakeVisible = false;
-  public onSubmit() {
-    if (!this.name || this.name.length < 2) {
-      alert('Invalid name');
-      return;
-    }
-    if (!this.email || !this.validateEmail(this.email)) {
-      alert('Invalid e-mail');
-      return;
-    }
-    this._playerDataService.setPlayerData({
-      name: this.name,
-      email: this.email,
-    });
-    const user = {
-      name: this.name,
-      email: this.email,
-    };
-    // this.user = user;
-    // console.log(JSON.stringify(user.name));
-    // console.log(`name ${this.name} email ${this.email}`);
-    // console.log(`user to ${user}`);
-    // console.log(`this user to ${this.user}`);
-    // console.log(`... user to ${{ ...user }}`);
+  public playerForm: FormGroup;
 
-    // this.userCreated.emit(user);
-    this.openSnake();
-    this.name = '';
-    this.email = '';
-    this._router.navigate(['/snake', this.colorPalette]);
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private playerDataService: PlayerDataService
+  ) {
+    this.playerForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(5)]],
+      authCode: ['', [Validators.required, Validators.minLength(5)]],
+      color: ['normal'],
+    });
   }
-  public openSnake() {
-    this.isSnakeVisible = true;
-    // this.showSnakeEvent.emit(true);
+
+  ngOnInit(): void {
+    this.loadFromLocalStorage();
   }
-  public closeSnake() {
-    this.isSnakeVisible = false;
-    // this.showSnakeEvent.emit(false);
+
+  onSubmit() {
+    if (this.playerForm.valid) {
+      const { name, authCode, color } = this.playerForm.value;
+      this.playerDataService.setPlayerData({ name });
+
+      this.saveToLocalStorage({ name, color });
+      this.router.navigate(['/snake', color]);
+    } else {
+      alert('wypelnij poprawnie');
+    }
   }
-  private validateEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+
+  private loadFromLocalStorage() {
+    const storedData = JSON.parse(localStorage.getItem('playerData') || '{}');
+    if (storedData.name) {
+      this.playerForm.patchValue({ name: storedData.name });
+    }
+    if (storedData.color) {
+      this.playerForm.patchValue({ color: storedData.color });
+      this.applyColorChange(storedData.color);
+    }
   }
-  ngOnInit(): void {}
+
+  private saveToLocalStorage(data: { name: string; color: string }) {
+    localStorage.setItem('playerData', JSON.stringify(data));
+  }
+
+  onColorChange(event: Event) {
+    const selectedColor = (event.target as HTMLSelectElement).value;
+    this.applyColorChange(selectedColor);
+  }
+
+  private applyColorChange(color: string) {
+    const element = document.getElementById('someElement');
+    if (element) {
+      if (color === 'high-contrast') {
+        element.style.color = 'pink';
+      } else {
+        element.style.filter = 'none';
+      }
+    }
+  }
 }
