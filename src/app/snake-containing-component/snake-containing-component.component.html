@@ -1,0 +1,118 @@
+<div class="wrapper">
+  <div class="action-list">
+    <button (click)="exitGame()">Exit game</button>
+    <h2>Action list</h2>
+    <div class="labels">
+      <label for="">Sort</label>
+      <select [(ngModel)]="sortDirection">
+        <option value="asc">asc.</option>
+        <option value="desc">desc.</option>
+      </select>
+      <label for="">Filter</label>
+      <select [(ngModel)]="selectedGameState">
+        <option value="">none</option>
+        <option value="Game started">Game started</option>
+        <option value="Game stopped">Game stopped</option>
+        <option value="Got 1 point">Got 1 point</option>
+        <option value="Game over">Game over</option>
+      </select>
+    </div>
+    <div class="list">
+      <ul class="moves">
+        <li
+          *ngFor="
+            let move of moveHistory
+              | filter : selectedGameState
+              | sort : sortDirection
+          "
+        >
+          {{ move.moves }} {{ " at " }} {{ move.times }}sec.
+        </li>
+      </ul>
+    </div>
+  </div>
+  <ngx-snake
+    #game
+    [class.black-and-white]="bw"
+    (foodEaten)="onGrow()"
+    (gameOver)="onGameOver()"
+    [ngClass]="{ 'black-and-white': bw }"
+  ></ngx-snake>
+
+  <table class="controls">
+    <tr>
+      <td>
+        <button (click)="startGame()" [disabled]="isGameOver">Start</button>
+      </td>
+      <td><button (click)="onStop()" [disabled]="isGameOver">Stop</button></td>
+      <td><button (click)="onReset()">Reset</button></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><button (click)="game.actionUp()">Up</button></td>
+    </tr>
+    <tr>
+      <td><button (click)="game.actionLeft()">Left</button></td>
+      <td></td>
+      <td><button (click)="game.actionRight()">Right</button></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><button (click)="game.actionDown()">Down</button></td>
+    </tr>
+    <tr style="height: 20px">
+      <td></td>
+    </tr>
+    <tr>
+      <td colspan="3">
+        <!-- <button *ngIf="!bw" class="bw" (click)="bw = true">Go B/W !</button>
+        <button *ngIf="bw" class="colors" (click)="bw = false">
+          <span class="green">no, </span>
+          <span>back to</span>
+          <span class="red">colors</span>
+        </button> -->
+      </td>
+    </tr>
+  </table>
+  <div class="user-scores">
+    <h2>This game stats</h2>
+    <div class="stats">
+      <p class="status">Game status: {{ " " }}{{ gameStatus }}</p>
+      <p class="score">This game score: {{ " " }}{{ points }}</p>
+      <p class="score">
+        This game time in seconds: {{ " " }}{{ gameDuration }}
+      </p>
+    </div>
+    <div class="highscores">
+      <h2>User Highscores</h2>
+      <label for="">Sort by</label>
+      <select [(ngModel)]="sortBy">
+        <option value=""></option>
+        <option value="time">time</option>
+        <option value="score">points</option>
+      </select>
+      <select [(ngModel)]="sortByAscDesc">
+        <option value="asc">asc.</option>
+        <option value="desc">desc.</option>
+      </select>
+    </div>
+    <ol>
+      <li
+        *ngFor="let score of scores | sortHighscores : sortBy : sortByAscDesc"
+      >
+        {{ user?.name }} scored: {{ score.score }} points in {{ score.minutes
+        }}{{ " " }}{{ score.seconds }}
+      </li>
+    </ol>
+  </div>
+</div>

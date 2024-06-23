@@ -1,0 +1,10 @@
+<div class="form-wrapper">
+  <h1>Welcome!</h1>
+  <form (ngSubmit)="onSubmit()">
+    <label for="name">Name: </label>
+    <input [(ngModel)]="name" type="text" name="name" placeholder="Name" />
+    <label for="email"> Email: </label>
+    <input [(ngModel)]="email" type="email" name="email" placeholder="E-mail" />
+    <button *ngIf="!isSnakeVisible" type="submit">Start game</button>
+  </form>
+</div>
